@@ -1,0 +1,20 @@
+image: python:3.5.1
+
+clone:
+  depth: "full"
+
+pipelines:
+  branches:
+    master:
+      - step:
+          script: # Modify the commands below to build your repository.
+            - echo "This Script only runs on Master Branch."
+            - pip install -U tox
+            - pip install -r requirements.txt
+            - pip --version
+            - tox --version
+            - echo "Push to HEROKU"
+            - git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD
+            - echo "Push - DONE !!"
+            - echo "Script Done !!"
+

@@ -1,91 +1,92 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Flask-SocketIO Test</title>
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <title>Pigeon Messenger</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+            integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+            integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
-            // Use a "/test" namespace.
-            // An application can open a connection on multiple namespaces, and
-            // Socket.IO will multiplex all those connections on a single
-            // physical channel. If you don't care about multiple channels, you
-            // can set the namespace to an empty string.
-            namespace = '/test';
+            function updateScroll(){
+                var element = document.getElementById("msg-board");
+                element.scrollTop = element.scrollHeight;
+            }
+           var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
-            // Connect to the Socket.IO server.
-            // The connection URL has the following format:
-            //     http[s]://<domain>:<port>[/<namespace>]
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+           socket.on('connect', function(){
+                socket.send("User has connected !!");
+           });
 
-            // Event handler for new connections.
-            // The callback function is invoked when a connection with the
-            // server is established.
-            socket.on('connect', function() {
-                socket.emit('my_event', {data: 'I\'m connected!'});
-            });
+           socket.on('message', function(msg){
+                $("#message").append("<li>" +  msg + "</li>");
+           });
 
-            // Event handler for server sent data.
-            // The callback function is invoked whenever the server emits data
-            // to the client. The data is then displayed in the "Received"
-            // section of the page.
-            socket.on('my_response', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
-            });
+           $("#sendButton").on("click", function(e) {
+                if ($("#myMessage").val().length != 0){
+                    e.preventDefault();
+                    var make_msg = "<strong>" + $("#username").val() + ": " + "</strong>" + $("#myMessage").val();
+                    socket.send(make_msg);
+                    $("#myMessage").val("");
+                }
 
-            // Interval function that tests message latency by sending a "ping"
-            // message. The server then responds with a "pong" message and the
-            // round trip time is measured.
-            var ping_pong_times = [];
-            var start_time;
-            window.setInterval(function() {
-                start_time = (new Date).getTime();
-                socket.emit('my_ping');
-            }, 1000);
-
-            // Handler for the "pong" message. When the pong is received, the
-            // time from the ping is stored, and the average of the last 30
-            // samples is average and displayed.
-            socket.on('my_pong', function() {
-                var latency = (new Date).getTime() - start_time;
-                ping_pong_times.push(latency);
-                ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
-                var sum = 0;
-                for (var i = 0; i < ping_pong_times.length; i++)
-                    sum += ping_pong_times[i];
-                $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
-            });
-
-            // Handlers for the different forms in the page.
-            // These accept data from the user and send it to the server in a
-            // variety of ways
-            $('form#broadcast').submit(function(event) {
-                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
-                $('#broadcast_data').val('');
-                return false;
-            });
-
-            $('form#disconnect').submit(function(event) {
-                socket.emit('disconnect_request');
-                return false;
-            });
+           });
+           setInterval(updateScroll,1000);
         });
+
     </script>
+    <style>
+        .msg-board{
+            overflow-y: scroll;
+            overflow-x: hidden;
+            max-height: 450px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Pigeon Messenger</h1>
-    <p>Async mode is: <b>{{ async_mode }}</b></p>
-    <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
-        <h2>Receive:</h2>
-    <div id="log"></div>
-    <h2>Send:</h2>
-    <form id="broadcast" method="POST" action='#'>
-        <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
-        <input type="submit" value="Broadcast">
-    </form>
-    <form id="disconnect" method="POST" action="#">
-        <input type="submit" value="Disconnect">
-    </form>
+<div class="container-fluid">
+    <div class="well text-center">
+        <h3>Pigeon Messenger</h3>
+    </div>
+    <div class="col-sm-4">
+
+
+        <!-- -->
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="message">User Name: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="username" placeholder="User Name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4">Message: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="myMessage" placeholder="Your Message">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary" id="sendButton">Send <span
+                            class="glyphicon glyphicon-send"></span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-8 msg-board" id="msg-board">
+        <ul id="message"></ul>
+    </div>
+</div>
+
 
 </body>
 </html>
