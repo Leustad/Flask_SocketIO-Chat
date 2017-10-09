@@ -17,31 +17,41 @@
 
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
+
+            function sanitize(input){
+		    var output = input.replace(/<script[^>]*?>.*?<\/script>/gi, '').
+                 replace(/<[\/\!]*?[^<>]*?>/gi, '').
+                 replace(/<style[^>]*?>.*?<\/style>/gi, '').
+                 replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
+            return output;
+	        };
+
             function updateScroll(){
                 var element = document.getElementById("msg-board");
                 element.scrollTop = element.scrollHeight;
             }
-           var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
-           socket.on('connect', function(){
+            socket.on('connect', function(){
                 socket.send("User has connected !!");
-           });
+            });
 
-           socket.on('message', function(msg){
+            socket.on('message', function(msg){
                 $("#message").append("<li>" +  msg + "</li>");
-           });
+            });
 
-           $("#sendButton").on("click", function(e) {
+            $("#sendButton").on("click", function(e) {
                 if ($("#myMessage").val().length != 0){
                     e.preventDefault();
-                    var make_msg = "<strong>" + $("#username").val() + ": " + "</strong>" + $("#myMessage").val();
+                    var make_msg = "<strong>" + sanitize($("#username").val()) + ": " + "</strong>" + sanitize($("#myMessage").val());
                     socket.send(make_msg);
                     $("#myMessage").val("");
                 }
+            });
+            setInterval(updateScroll,1000);
+            });
 
-           });
-           setInterval(updateScroll,1000);
-        });
+
 
     </script>
     <style>
@@ -50,6 +60,8 @@
             overflow-x: hidden;
             max-height: 450px;
         }
+
+
     </style>
 </head>
 <body>
@@ -57,10 +69,12 @@
     <div class="well text-center">
         <h3>Pigeon Messenger</h3>
     </div>
+    <p class="alert alert-info" style="width: 600px;"><span
+            class="glyphicon glyphicon-info-sign"></span><strong> Info! </strong>Your messages will be broadcasted. Means
+        that you won't know who is reading it.<br> <strong>Be gentle, Be courteous !!</strong>
+    </p>
     <div class="col-sm-4">
 
-
-        <!-- -->
         <form class="form-horizontal">
             <div class="form-group">
                 <label class="control-label col-sm-4" for="message">User Name: </label>
@@ -86,7 +100,5 @@
         <ul id="message"></ul>
     </div>
 </div>
-
-
 </body>
 </html>
