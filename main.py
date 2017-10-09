@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -12,6 +12,12 @@ socketio = SocketIO(app)
 def handleMessage(msg):
     print("Message: " + msg)
     send(msg, broadcast=True)
+
+
+@socketio.on('type_status')
+def handle_type_status(user):
+    print(user)
+    emit('user', {'data': user['data']}, broadcast=True)
 
 
 @app.route('/')
