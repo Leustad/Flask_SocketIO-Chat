@@ -1,104 +1,7 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <title>Pigeon Messenger</title>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-            integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-            integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
-            crossorigin="anonymous"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{% extends '_base.html' %}
 
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function () {
+{% block content %}
 
-            function sanitize(input) {
-                var output = input.replace(/<script[^>]*?>.*?<\/script>/gi, '').replace(/<[\/\!]*?[^<>]*?>/gi, '').replace(/<style[^>]*?>.*?<\/style>/gi, '').replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
-                return output;
-            };
-
-            function updateScroll() {
-                var element = document.getElementById("msg-board");
-                element.scrollTop = element.scrollHeight;
-            }
-
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
-            socket.on('connect', function () {
-                socket.send("User has connected !!");
-            });
-
-            socket.on('message', function (msg) {
-                $("#message").append("<li>" + msg + "</li>");
-                $("small").remove();
-            });
-
-            socket.on('user', function (user) {
-                console.log(user);
-                $("small").remove();
-                $("#message").append("<small>" + user.data + " is typing..." + "</small>")
-            });
-
-            $("#sendButton").on("click", function (e) {
-                if ($("#myMessage").val().length != 0) {
-                    e.preventDefault();
-                    var make_msg = "<strong>" + sanitize($("#username").val()) + ": " + "</strong>" + sanitize($("#myMessage").val());
-                    socket.send(make_msg);
-                    $("#myMessage").val("");
-                }
-            });
-            setInterval(updateScroll, 1000);
-
-
-            // Returns a function, that, as long as it continues to be invoked, will not
-            // be triggered. The function will be called after it stops being called for
-            // N milliseconds. If `immediate` is passed, trigger the function on the
-            // leading edge, instead of the trailing.
-            function debounce(func, wait, immediate) {
-                var timeout;
-                return function () {
-                    var context = this, args = arguments;
-                    var later = function () {
-                        timeout = null;
-                        if (!immediate) func.apply(context, args);
-                    };
-                    var callNow = immediate && !timeout;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                    if (callNow) func.apply(context, args);
-                };
-            };
-
-            // This will apply the debounce effect on the keyup event
-            // And it only fires 500ms or half a second after the user stopped typing
-            $('#myMessage').on('keyup', debounce(function (event) {
-                if (event.which !== 13) {
-
-                    socket.emit('type_status', {data: $("#username").val()});
-//                $('.content').text($(this).val());
-                }
-            }, 500, 1000));
-        });
-
-
-    </script>
-    <style>
-        .msg-board {
-            overflow-y: scroll;
-            overflow-x: hidden;
-            max-height: 450px;
-        }
-
-
-    </style>
-</head>
-<body>
 <div class="container-fluid">
     <div class="well text-center">
         <h3><img src="/static/img/dove.svg" style="width:50px;"/>Pigeon Messenger</h3>
@@ -135,5 +38,5 @@
         <ul id="message"></ul>
     </div>
 </div>
-</body>
-</html>
+
+{% endblock %}

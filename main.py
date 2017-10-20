@@ -25,7 +25,12 @@ def index():
     return render_template('index.html')
 
 
+@app.errorhandler(500)
+def pageNotFound(error):
+    return render_template('errors/500.html')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 33508))
     print("port: ", port)
-    socketio.run(app, host='0.0.0.0', port=port)
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
