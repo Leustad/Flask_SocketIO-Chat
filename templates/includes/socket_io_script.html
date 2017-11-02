@@ -1,0 +1,78 @@
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+
+        function sanitize(input) {
+            var output = input.replace(/<script[^>]*?>.*?<\/script>/gi, '').replace(/<[\/\!]*?[^<>]*?>/gi, '').replace(/<style[^>]*?>.*?<\/style>/gi, '').replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
+            return output;
+        };
+
+        function updateScroll() {
+            var element = document.getElementById("msg-board");
+            element.scrollTop = element.scrollHeight;
+        }
+
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        socket.on('connect', function () {
+            socket.send($('#username').val() + " has connected !!");
+        });
+
+        socket.on('message', function (msg) {
+            $("#message").append("<li>" + msg + "</li>");
+            $("small").remove();
+        });
+
+        socket.on('user', function (user) {
+            $("small").remove();
+            $("#message").append("<small>" + user.data + " is typing..." + "</small>")
+        });
+
+        socket.on('logout_status', function(logout_status){
+            $("#message").append("<small>" + logout_status.data + " Has been logged out" + "</small>")
+        });
+
+        $("#sendButton").on("click", function (e) {
+            if ($("#myMessage").val().length != 0) {
+                e.preventDefault();
+                var make_msg = "<strong>" + sanitize($("#username").val()) + ": " + "</strong>" + sanitize($("#myMessage").val());
+                socket.send(make_msg);
+                $("#myMessage").val("");
+            }
+        });
+        setInterval(updateScroll, 1000);
+
+
+        // Returns a function, that, as long as it continues to be invoked, will not
+        // be triggered. The function will be called after it stops being called for
+        // N milliseconds. If `immediate` is passed, trigger the function on the
+        // leading edge, instead of the trailing.
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function () {
+                var context = this, args = arguments;
+                var later = function () {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
+        // This will apply the debounce effect on the keyup event
+        // And it only fires 500ms or half a second after the user stopped typing
+        $('#myMessage').on('keyup', debounce(function (event) {
+            if (event.which !== 13) {
+                socket.emit('type_status', {data: $("#username").val()});
+            }
+        }, 500, 1000));
+
+        $('#logout').click(function() {
+            socket.emit('logout_status', {data: $('#username').val()});
+        })
+
+    });
+
+</script>

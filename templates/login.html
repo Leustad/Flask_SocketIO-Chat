@@ -1,0 +1,36 @@
+{% extends "_base.html" %}
+{% block title %}| Login{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Modal content -->
+    <div class="col-sm-4">
+    </div>
+    <div class="well text-center col-sm-4">
+        <h3>Please Log in</h3>
+        <small>No need for registration. Just type your name and you are in</small>
+        <div class="pop-up-modal-body">
+            <form class="form-signin" role="form" method="post" action="/login">
+                {{ form.csrf_token }}
+                <p>{{ form.name(placeholder="User Name") }}</p>
+                <p>
+                        <span class="error">
+                            {% if form.name.errors %}
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            {% endif %}
+                        </span>
+                </p>
+                <button class="btn btn-sm btn-primary" type="submit">Sign In</button>
+                <br>
+                <br>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-4">
+    </div>
+</div>
+{% endblock %}
