@@ -3,7 +3,7 @@ import json
 from functools import wraps
 
 from flask import Flask, render_template, session, flash, redirect, url_for, request
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, disconnect
 
 from forms import LoginForm
 
@@ -41,6 +41,8 @@ def handle_type_status(user):
 
 @socketio.on('logout_status')
 def handle_logout_status(logout_status):
+    disconnect()
+    print(session['user'], 'Disconnected')
     emit('logout_status', {'data': logout_status['data']}, broadcast=True)
 
 
