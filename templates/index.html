@@ -1,5 +1,9 @@
 {% extends '_base.html' %}
 
+{% block script %}
+    {% include 'includes/socket_io_script.html' %}
+{% endblock %}
+
 {% block content %}
 
 <div class="container-fluid">
@@ -8,18 +12,15 @@
     </div>
     <p class="alert alert-info" style="width: 600px;"><span
             class="glyphicon glyphicon-info-sign"></span><strong> Info! </strong>Your messages will be broadcasted.
-        Means
-        that you won't know who is reading it.<br> <strong>Be gentle, Be courteous !!</strong>
+        Means that you won't know who is reading it.<br> <strong>Be gentle, Be courteous !!</strong>
     </p>
     <div class="col-sm-4">
+        <div id="all_users">Connected users:
+            {{ all_users | join(" - ") }}
+        </div>
 
         <form class="form-horizontal">
-            <div class="form-group">
-                <label class="control-label col-sm-4" for="message">User Name: </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="username" placeholder="User Name">
-                </div>
-            </div>
+            <p>Logged-in as <strong>{{ session['user'] }}</strong></p>
             <div class="form-group">
                 <label class="control-label col-sm-4">Message: </label>
                 <div class="col-sm-8">
@@ -32,6 +33,10 @@
                             class="glyphicon glyphicon-send"></span></button>
                 </div>
             </div>
+
+        </form>
+        <form class="form-horizontal" id="logout" action="/logout">
+            <button type="submit" class="btn btn-danger" value="log out">Log out <span class="glyphicon glyphicon-log-out"></span></button>
         </form>
     </div>
     <div class="col-sm-8 msg-board" id="msg-board">
