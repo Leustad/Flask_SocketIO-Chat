@@ -11,7 +11,8 @@
             element.scrollTop = element.scrollHeight;
         }
 
-        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port,
+        {'sync disconnect on unload': true });
 
         socket.on('connect', function () {
             socket.send($('#username').val() + " has connected !!");
@@ -71,8 +72,8 @@
 
         $('#logout').click(function() {
             socket.emit('logout_status', {data: $('#username').val()});
-        })
-
+        });
     });
+
 
 </script>

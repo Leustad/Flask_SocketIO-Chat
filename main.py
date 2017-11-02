@@ -16,6 +16,7 @@ users = []
 
 
 def login_required(test):
+    global users
     @wraps(test)
     def wrap(*args, **kwargs):
         if 'logged_in' in session:
@@ -42,8 +43,14 @@ def handle_type_status(user):
 @socketio.on('logout_status')
 def handle_logout_status(logout_status):
     disconnect()
-    print(session['user'], 'Disconnected')
+    # print(session['user'], 'Disconnected')
     emit('logout_status', {'data': logout_status['data']}, broadcast=True)
+
+
+@socketio.on('disconnect')
+def disconnect_socket():
+    print(session['user'], 'Disconnected')
+    logout()
 
 
 @app.route('/')
@@ -76,9 +83,15 @@ def logout():
     global users
     flash('Goodbye ! {}'.format(session['user'].upper()))
     session.pop('logged_in', None)
-    users.remove(session['user'])
+    try:
+        users.remove(session['user'])
+        print(session['user'], 'removed')
+
+    except:
+        pass
     session.pop('user', None)
-    return redirect(url_for('index'))
+    session.clear()
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(500)

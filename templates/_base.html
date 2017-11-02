@@ -21,15 +21,17 @@
             url:"/get_all_users",
             contentType: 'application/json;charset=UTF-8',
             success:function(data){
+            console.log(data)
 
             var users_tag = $('#all_users');
             data = data.replace(/\"/g, '');
             data = data.replace(/\[/g, '');
             data = data.replace(/\]/g, '');
-
             $(users_tag).empty();
             $(users_tag).append("Connected users: " + data);
             }
+
+
         });
         }, 10000);//time in milliseconds
 
