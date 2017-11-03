@@ -12,6 +12,13 @@
     <div class="col-sm-4">
     </div>
     <div class="well text-center col-sm-4">
+        {% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+        <p class="text-danger">{{ message }} </p>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
         <h3>Please Log in</h3>
         <small>No need for registration. Just type your name and you are in</small>
         <div class="pop-up-modal-body">

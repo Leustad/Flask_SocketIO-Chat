@@ -22,7 +22,6 @@ def login_required(test):
         if 'logged_in' in session:
             return test(*args, **kwargs)
         else:
-            flash('You need to log in !!')
             return redirect(url_for('login'))
 
     return wrap
@@ -57,6 +56,8 @@ def disconnect_socket():
 @login_required
 def index():
     global users
+    if session['user'] not in users:
+        users.append(session['user'])
     return render_template('index.html', all_users=users)
 
 
@@ -68,11 +69,15 @@ def login():
 
     if request.method == 'POST':
         if form.validate_on_submit():
-            session['user'] = request.form['name']
-            session['logged_in'] = True
-            users.append(session['user'])
-            print(users)
-            return redirect(url_for('index'))
+            if request.form['name'] not in users:
+                session['user'] = request.form['name']
+                session['logged_in'] = True
+                users.append(session['user'])
+                print(users)
+                return redirect(url_for('index'))
+            else:
+                flash('{} is in use. Please select an other one'.format(request.form['name']))
+                return redirect(url_for('login'))
 
     return render_template('login.html', form=form, error=error)
 
