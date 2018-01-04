@@ -30,8 +30,6 @@
             $(users_tag).empty();
             $(users_tag).append("Connected users: " + data);
             }
-
-
         });
         }, 10000);//time in milliseconds
 
@@ -40,13 +38,31 @@
     </script>
     {% block script %}{% endblock %}
     <style>
+        html{
+            min-height: 100%;
+            position: relative;
+        }
+        body{
+            height: 100%;
+        }
+        .input-row{
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+        }
+        .logged-in{
+            position: absolute;
+            bottom: 45px;
+            width: 100%;
+        }
+        #myMessage{
+            width: 100%;
+        }
         .msg-board {
             overflow-y: scroll;
             overflow-x: hidden;
             max-height: 450px;
         }
-
-
     </style>
 </head>
 <body>

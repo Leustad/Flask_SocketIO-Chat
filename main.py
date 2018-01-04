@@ -113,4 +113,4 @@ def get_users():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 33508))
     print("port: ", port)
-    socketio.run(app, host='0.0.0.0', port=port, debug=False)
+    socketio.run(app, host='0.0.0.0', port=port, debug=True)

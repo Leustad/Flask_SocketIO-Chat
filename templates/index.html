@@ -1,7 +1,7 @@
 {% extends '_base.html' %}
 
 {% block script %}
-    {% include 'includes/socket_io_script.html' %}
+{% include 'includes/socket_io_script.html' %}
 {% endblock %}
 
 {% block content %}
@@ -10,38 +10,35 @@
     <div class="well text-center">
         <h3><img src="/static/img/dove.svg" style="width:50px;"/>Pigeon Messenger</h3>
     </div>
-    <p class="alert alert-info" style="width: 600px;"><span
+    <p class="alert alert-info text-center" ><span
             class="glyphicon glyphicon-info-sign"></span><strong> Info! </strong>Your messages will be broadcasted.
         Means that you won't know who is reading it.<br> <strong>Be gentle, Be courteous !!</strong>
     </p>
-    <div class="col-sm-4">
-        <div id="all_users">Connected users:
-            {{ all_users | join(" - ") }}
-        </div>
 
-        <form class="form-horizontal">
-            <p>Logged-in as <strong>{{ session['user'] }}</strong></p>
-            <div class="form-group">
-                <label class="control-label col-sm-4">Message: </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="myMessage" placeholder="Your Message">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary" id="sendButton">Send <span
-                            class="glyphicon glyphicon-send"></span></button>
-                </div>
-            </div>
-
-        </form>
-        <form class="form-horizontal" id="logout" action="/logout">
-            <button type="submit" class="btn btn-danger" value="log out">Log out <span class="glyphicon glyphicon-log-out"></span></button>
-        </form>
+    <div id="all_users">Connected users:
+        {{ all_users | join(" - ") }}
     </div>
-    <div class="col-sm-8 msg-board" id="msg-board">
+        <form class="form-horizontal" id="logout" action="/logout">
+        <button type="submit" class="btn btn-danger" value="log out">Log out <span
+                class="glyphicon glyphicon-log-out"></span></button>
+    </form>
+    <hr>
+    <div class="col-lg-12 msg-board" id="msg-board">
         <ul id="message"></ul>
     </div>
+
+    <form class="form-horizontal">
+        <p class="logged-in">Logged-in as <strong>{{ session['user'] }}</strong></p>
+        <div class="row input-row">
+            <div class="col-sm-11 myMessage">
+                <input type="text" class="form-control" id="myMessage" placeholder="Your Message">
+            </div>
+            <div class="col-sm-1">
+                <button type="submit" class="btn btn-primary" id="sendButton">Send <span
+                        class="glyphicon glyphicon-send"></span></button>
+            </div>
+        </div>
+    </form>
 </div>
 
 {% endblock %}
